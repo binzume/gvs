@@ -59,7 +59,7 @@ make
 make write # 何らかのAVRプログラマを用意してください
 ```
 
-test_da.hexを実行すると，Ipp=±2mAな三角波が出力されます．
+test_da.hexを実行すると，Ipp=±2mAな台形波が出力されます．
 
 
 ## TODO

@@ -1,8 +1,5 @@
-//
 // D/A test
 // 0V -> 2V(2mA) -> 0V -> -2V(-2mA) -> 0V -> ...
-//
-
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -27,14 +24,12 @@
 
 #define MAX_DA 20 // Current(mA) = MAX_DA * AVR_Vcc(5V) / 5 / 10
 
-
 void delay_ms(uint16_t w){
     while (w-->0) _delay_ms(1);
 }
 
 
-void send_byte(uint8_t d)
-{
+void send_byte(uint8_t d) {
     // wait to become writable.
     while (bit_is_clear(UCSR0A, UDRE0));
     UDR0 = d;
@@ -49,7 +44,6 @@ void set_da(uint16_t v) {
     _delay_us(5);
     DA_CS_PORT |= _BV(DA_CS_BIT);
 }
-
 
 void set_sign(uint8_t s) {
     SIGN_CTRL_PORT &= ~(_BV(SIGN_CTRL1_BIT) | _BV(SIGN_CTRL1_BIT));
@@ -77,27 +71,22 @@ void init_da() {
     set_da(0);
 }
 
-
-int main(void)
-{
-
+int main(void) {
     DDRC = 0xFF;
     PORTC = 0x00;
 
     init_da();
-
     delay_ms(1000);
 
-    uint8_t count = 0;
-    for (;;) {
-        uint8_t i;
+    uint8_t count, i;
+    for (count = 0;;count ++) {
         for (i = 0; i <= MAX_DA; i++) {
             delay_ms(10);
             set_da(i * (4096 / 50)); // 0.1mA * (4096 / 50) be careful!
         }
 
         delay_ms(500);
-        PORTC |= 0x01; // LED
+        PORTC ^= 0x01; // LED
 
         for (i = MAX_DA; i >0 ; i--) {
             delay_ms(10);
@@ -107,12 +96,9 @@ int main(void)
         set_da(0 * (4096 / 50)); // set 0mA before switch.
         delay_ms(1);
         set_sign(count&1);
-        delay_ms(100);
 
-        PORTC &= ~0x01; // LED
-
-        count ++;
+        delay_ms(500);
+        PORTC ^= 0x01; // LED
     }
     return 0;
 }
-
